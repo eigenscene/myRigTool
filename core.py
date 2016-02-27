@@ -45,9 +45,19 @@ def alignCtrlToJnt():
     pm.parent(tmpGroup, selCom[-1])
     tmpGroup.rotate.set([0, 0, 0])
     tmpGroup.translate.set([0, 0, 0])
-    tmpGroup.rotate.set([0, 0, 90])
+    pm.parent(tmpGroup, world = True)
     pm.ungroup(tmpGroup)
-    # pm.makeIdentity(selCom[:-1], apply = True, r = 1)
+    # Convert controls to control vertices
+    selCom2 = selCom[:-1]
+
+    for i in range(len(selCom2)):
+        selCom2[i] += '.cv[*]'
+
+    pm.select(selCom2)
+    pm.rotate([0, 0, 90])
+    pm.select(cl = True)
+    pm.select(selCom[:-1])
+
 
 # -----------------------------------------------------------------------------------
 # Change controller name to JOINT_NAME_ctrl
@@ -63,4 +73,30 @@ def renameCtrlToJnt():
 def freezeAll():
     selCom = pm.ls(sl = True, fl = True)
     pm.makeIdentity(selCom, apply = True, t = 1, r = 1, s = 1)
+
+# -----------------------------------------------------------------------------------
+# Create Shelf Button
+# -----------------------------------------------------------------------------------
+def createShelfBtn():
+    # Get top shelf as parent
+    pm.mel.eval('global string $gShelfTopLevel')
+    topShelf = pm.mel.eval('$temp = $gShelfTopLevel')
+    currentShelf = pm.tabLayout(topShelf, query=True, selectTab=True)
+    pm.setParent(topShelf + '|' + currentShelf)
+
+    # Create the button
+    pm.shelfButton(
+    annotation = 'myRigTool',
+    command =
+    'python(\"import sys\");\n'
+    '\n'
+    'catchQuiet ( `python(\"del sys.modules[\'myRigTool\']\")`);\n'
+    'catchQuiet ( `python(\"del sys.modules[\'myRigTool.UI\']\")`);\n'
+    'catchQuiet ( `python(\"del sys.modules[\'myRigTool.core\']\")`);\n'
+    '\n'
+    'python(\"import myRigTool\");',
+    label='myRigTool',
+    image1='commandButton.png',
+    sourceType='mel'
+    )
 # -----------------------------------------------------------------------------------

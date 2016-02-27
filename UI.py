@@ -26,20 +26,38 @@ def window_creation():
     if pm.windowPref(window_name, ex=True):
         pm.windowPref(window_name, r=True)
 
-    window_obj = pm.window(window_name)
+    window_obj = pm.window(window_name, menuBar = True)
     gui_creation()
     window_obj.show()
 
 def gui_creation():
+    pm.menu(label = 'Edit')
+
+    pm.menuItem(
+    label = 'Create Shelf Button', 
+    command = lambda *args: core.createShelfBtn())
+
     form = pm.formLayout()
     t1 = pm.text('Controller Setup')
     sep1 = pm.separator( height=40, style='in' )
     t2 = pm.text('Others')
 
     row1 = pm.rowLayout(numberOfColumns = 3)
-    b1 = pm.button(label='Align with Joint', command = lambda *args: core.alignCtrlToJnt())
-    b2 = pm.button(label='Rename', command = 'mr.renameCtrlToJnt()')
-    b3 = pm.button(label='Freeze', command = 'mr.freezeAll()')
+
+    b1 = pm.button(
+    annotation = 'Align selected controller with selected joint.',
+    label = 'Align with Joint',
+    command = lambda *args: core.alignCtrlToJnt())
+
+    b2 = pm.button(
+    annotation = 'Rename selected controller as "Selected Controller Name" + "_ctrl"',
+    label='Rename',
+    command = 'mr.renameCtrlToJnt()')
+
+    b3 = pm.button(
+    annotation = 'Freeze selected components',
+    label='Freeze',
+    command = 'mr.freezeAll()')
 
     pm.formLayout(form, edit = True,
     attachForm = [
