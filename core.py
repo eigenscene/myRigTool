@@ -21,11 +21,10 @@ import pymel.core as pm
 # check if last selection is joint.
 # -----------------------------------------------------------------------------------
 
-def checkSelection(selCom):
-    print selCom[-1]
-    if len(selCom) < 2:
+def checkSelection(selComp):
+    if len(selComp) < 2:
         pm.error('Please select a controller and joint')
-    if not pm.objectType(selCom[-1], isType='joint'):
+    if not pm.objectType(selComp[-1], isType='joint'):
         pm.error('Please select a joint for last')
 
 # -----------------------------------------------------------------------------------
@@ -39,24 +38,24 @@ def checkSelection(selCom):
 # -----------------------------------------------------------------------------------
 
 def alignCtrlToJnt():
-    selCom = pm.ls(sl = True, fl = True)
-    checkSelection(selCom)
-    tmpGroup = pm.group(selCom[:-1])
-    pm.parent(tmpGroup, selCom[-1])
+    selComp = pm.ls(sl = True, fl = True)
+    checkSelection(selComp)
+    tmpGroup = pm.group(selComp[:-1])
+    pm.parent(tmpGroup, selComp[-1])
     tmpGroup.rotate.set([0, 0, 0])
     tmpGroup.translate.set([0, 0, 0])
     pm.parent(tmpGroup, world = True)
     pm.ungroup(tmpGroup)
     # Convert controls to control vertices
-    selCom2 = selCom[:-1]
+    selComp2 = selComp[:-1]
 
-    for i in range(len(selCom2)):
-        selCom2[i] += '.cv[*]'
+    for i in range(len(selComp2)):
+        selComp2[i] += '.cv[*]'
 
-    pm.select(selCom2)
+    pm.select(selComp2)
     pm.rotate([0, 0, 90])
     pm.select(cl = True)
-    pm.select(selCom[:-1])
+    pm.select(selComp[:])
 
 
 # -----------------------------------------------------------------------------------
@@ -64,15 +63,21 @@ def alignCtrlToJnt():
 # -----------------------------------------------------------------------------------
 
 def renameCtrlToJnt():
-    checkSelection()
+    selComp = pm.ls(selection = True, flatten = True, objectsOnly = True)
+    checkSelection(selComp)
+    if len(selComp) > 2:
+        pm.error('Please select a controller and joint')
+    newName = selComp[1].replace('_jnt', '')
+    newName += '_ctrl'
+    selComp[0].rename(newName)
 
 # -----------------------------------------------------------------------------------
 # Freeze Selected Components
 # -----------------------------------------------------------------------------------
 
 def freezeAll():
-    selCom = pm.ls(sl = True, fl = True)
-    pm.makeIdentity(selCom, apply = True, t = 1, r = 1, s = 1)
+    selComp = pm.ls(sl = True, fl = True)
+    pm.makeIdentity(selComp, apply = True, t = 1, r = 1, s = 1)
 
 # -----------------------------------------------------------------------------------
 # Create Shelf Button

@@ -34,7 +34,7 @@ def gui_creation():
     pm.menu(label = 'Edit')
 
     pm.menuItem(
-    label = 'Create Shelf Button', 
+    label = 'Create Shelf Button',
     command = lambda *args: core.createShelfBtn())
 
     form = pm.formLayout()
@@ -52,7 +52,7 @@ def gui_creation():
     b2 = pm.button(
     annotation = 'Rename selected controller as "Selected Controller Name" + "_ctrl"',
     label='Rename',
-    command = 'mr.renameCtrlToJnt()')
+    command = lambda *args: core.renameCtrlToJnt())
 
     b3 = pm.button(
     annotation = 'Freeze selected components',
